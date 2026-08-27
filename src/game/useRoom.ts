@@ -18,7 +18,13 @@ function roomInfo(){
 
 export function useRoom(name:string) {
   const info = useMemo(roomInfo,[])
-  const id = useMemo(() => crypto.randomUUID(),[])
+  const id = useMemo(() => {
+    const saved=localStorage.getItem('common-lounge-person-id')
+    if(saved)return saved
+    const next=crypto.randomUUID()
+    localStorage.setItem('common-lounge-person-id',next)
+    return next
+  },[])
   const [peers,setPeers] = useState<Peer[]>([])
   const [messages,setMessages] = useState<RoomChat[]>([])
   const [gameEvents,setGameEvents] = useState<GameEvent[]>([])

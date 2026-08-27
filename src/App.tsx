@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRoom, type GameEvent } from './game/useRoom'
+import TeaBoard from './TeaBoard'
+import PhotoBooth from './PhotoBooth'
 import './App.css'
 
-type Tab='lounge'|'tea'|'mystery'|'guess'|'mafia'|'pacheesa'
+type Tab='lounge'|'tea'|'booth'|'mystery'|'guess'|'mafia'|'pacheesa'
 type Room=ReturnType<typeof useRoom>
 type Player={id:string;name:string}
-const games:Array<[Tab,string,string,string]>=[['mystery','Motive','Solve a case together','✦'],['guess','Guess the Person','Give hints. Guess right.','?'],['mafia','Mafia & Doctor','Trust nobody after dark.','☾'],['pacheesa','Pacheesa','Raise, reset, survive.','5']]
+const games:Array<[Tab,string,string,string]>=[['booth','Photo Booth','Different rooms. Same photo.','▣'],['mystery','Motive','Solve a case together','✦'],['guess','Guess the Person','Give hints. Guess right.','?'],['mafia','Mafia & Doctor','Trust nobody after dark.','☾'],['pacheesa','Pacheesa','Raise, reset, survive.','5']]
 
 export default function App(){
   const[draft,setDraft]=useState('')
@@ -18,17 +20,15 @@ function Lounge({name}:{name:string}){
   const[tab,setTab]=useState<Tab>('lounge')
   const room=useRoom(name)
   const[message,setMessage]=useState('')
-  const[tea,setTea]=useState<string[]>([])
-  const[pin,setPin]=useState('')
   const send=()=>{if(message.trim()){room.sendChat(message);setMessage('')}}
   return <main className="lounge"><aside><div className="logo">✦ <b>COMMON<br/>LOUNGE</b></div><p className="roomcode">ROOM · {room.code}</p><nav><button className={tab==='lounge'?'active':''} onClick={()=>setTab('lounge')}>⌂ The lounge</button><button className={tab==='tea'?'active':''} onClick={()=>setTab('tea')}>☕ Tea board</button><p>PLAY TOGETHER</p>{games.map(([id,title,,icon])=><button className={tab===id?'active':''} onClick={()=>setTab(id)} key={id}><i>{icon}</i>{title}</button>)}</nav><div className="online"><span className={room.connected?'':'off'}/> {room.connected?`${room.peers.length+1} friends around`:'connecting…'}</div></aside><section className="main"><header><div><p>{tab==='lounge'?'WELCOME BACK':tab.toUpperCase()}</p><h1>{tab==='lounge'?'Hey, '+name+'!':games.find(x=>x[0]===tab)?.[1]||'Tea Board'}</h1></div><button className="invite" onClick={async()=>{await navigator.clipboard?.writeText(location.href);alert('Invite link copied!')}}>⧉ Invite friends</button></header>
   {tab==='lounge'&&<Home setTab={setTab} room={room} message={message} setMessage={setMessage} send={send}/>}
-  {tab==='tea'&&<Tea tea={tea} pin={pin} setPin={setPin} add={()=>{if(pin.trim()){setTea([pin,...tea]);room.sendChat('☕ TEA: '+pin);setPin('')}}}/>}
+  {tab==='tea'&&<TeaBoard roomCode={room.code} userId={room.id} name={name}/>}
+  {tab==='booth'&&<PhotoBooth roomCode={room.code} userId={room.id} name={name} peers={room.peers} gameEvents={room.gameEvents} sendGame={room.sendGame}/>}
   {tab==='mystery'&&<Mystery room={room}/>} {tab==='guess'&&<Guess room={room} me={{id:room.id,name}}/>}{tab==='mafia'&&<Mafia room={room} me={{id:room.id,name}}/>}{tab==='pacheesa'&&<Pacheesa room={room} me={{id:room.id,name}}/>}</section></main>
 }
 
 function Home({setTab,room,message,setMessage,send}:{setTab:(t:Tab)=>void;room:Room;message:string;setMessage:(s:string)=>void;send:()=>void}){return <><section className="welcome"><div><span>TONIGHT'S MOOD</span><h2>Stay in. Spill something.<br/>Play a game.</h2><p>The lounge is yours. Pick something and pull everyone in.</p></div><div className="glow">☕</div></section><div className="game-cards">{games.map(([id,title,sub,icon])=><button key={id} onClick={()=>setTab(id)}><i>{icon}</i><b>{title}</b><small>{sub}</small><em>Open →</em></button>)}</div><section className="chatbox"><h2>Live room chat <i>say hi</i></h2><div className="messages">{room.messages.length===0&&<p className="muted">No messages yet. Break the ice.</p>}{room.messages.slice(-8).map(m=><p key={m.id}><b>{m.name}</b> {m.text}</p>)}</div><form onSubmit={e=>{e.preventDefault();send()}}><input value={message} onChange={e=>setMessage(e.target.value)} placeholder="Say something to the room…"/><button>Send</button></form></section></>}
-function Tea({tea,pin,setPin,add}:{tea:string[];pin:string;setPin:(s:string)=>void;add:()=>void}){return <><section className="tea-hero"><span>☕</span><div><h2>Tea board</h2><p>Low stakes gossip. High stakes reactions.</p></div></section><form className="pin-form" onSubmit={e=>{e.preventDefault();add()}}><input value={pin} onChange={e=>setPin(e.target.value)} placeholder="What's the tea?"/><button>Pin it ✦</button></form><div className="pins">{tea.map((x,i)=><article className={'pin p'+i%4} key={x}><span>☕ HOT TEA</span><p>{x}</p><small>♡ {i+2} reactions · reply</small></article>)}</div></>}
 
 type Case={title:string;place:string;hook:string;victim:string;culprit:string;suspects:{name:string;line:string}[];evidence:string[];witnesses:string[];solution:string}
 const cases:Case[]=[
