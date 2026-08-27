@@ -6,7 +6,7 @@ A colourful browser lounge for small groups of friends. Create a room, share its
 
 - Supabase Realtime room presence, chat, votes, and game events
 - Persistent tea posts with likes and threaded replies
-- A remote photobooth with invitations, synchronized capture, effects, cloud storage, and a shared gallery
+- A remote photobooth with invitations, synchronized capture, illustrated wallpapers, digital props, developed camera effects, cloud storage, and a shared gallery
 - Ten illustrated collaborative murder-mystery cases
 - Guess the Person for two or more players with secret locking and timed rounds
 - Mafia & Doctor with private roles, night actions, voting, and win conditions
