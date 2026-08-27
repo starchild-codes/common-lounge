@@ -5,13 +5,14 @@ A colourful browser lounge for small groups of friends. Create a room, share its
 ## Features
 
 - Supabase Realtime room presence, chat, votes, and game events
-- Persistent tea posts with likes and threaded replies
+- Persistent tea posts with likes, threaded replies, and owner deletion
 - A remote photobooth with invitations, synchronized capture, illustrated wallpapers, digital props, developed camera effects, cloud storage, and a shared gallery
 - Ten illustrated collaborative murder-mystery cases
 - Guess the Person for two or more players with secret locking and timed rounds
 - Mafia & Doctor with private roles, night actions, voting, and win conditions
 - Pacheesa with private raises and synchronized 15-second rounds
-- Responsive scrapbook-inspired interface
+- Responsive scrapbook-inspired interface with touch-first mobile navigation
+- Owner deletion for developed photos, including their cloud-storage files
 
 ## Local development
 
