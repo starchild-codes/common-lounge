@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRoom, type GameEvent } from './game/useRoom'
 import TeaBoard from './TeaBoard'
-import PhotoBooth from './PhotoBooth'
 import './App.css'
 
-type Tab='lounge'|'tea'|'booth'|'mystery'|'guess'|'mafia'|'pacheesa'
+type Tab='lounge'|'tea'|'mystery'|'guess'|'mafia'|'pacheesa'
 type Room=ReturnType<typeof useRoom>
 type Player={id:string;name:string}
-const games:Array<[Tab,string,string,string]>=[['booth','Photo Booth','Different rooms. Same photo.','▣'],['mystery','Motive','Solve a case together','✦'],['guess','Guess the Person','Give hints. Guess right.','?'],['mafia','Mafia & Doctor','Trust nobody after dark.','☾'],['pacheesa','Pacheesa','Raise, reset, survive.','5']]
+const games:Array<[Tab,string,string,string]>=[['mystery','Motive','Solve a case together','✦'],['guess','Guess the Person','Give hints. Guess right.','?'],['mafia','Mafia & Doctor','Trust nobody after dark.','☾'],['pacheesa','Pacheesa','Raise, reset, survive.','5']]
 
 export default function App(){
   const[draft,setDraft]=useState('')
@@ -24,7 +23,6 @@ function Lounge({name}:{name:string}){
   return <main className="lounge"><aside><div className="logo">✦ <b>COMMON<br/>LOUNGE</b></div><p className="roomcode">ROOM · {room.code}</p><nav><button className={tab==='lounge'?'active':''} onClick={()=>setTab('lounge')}>⌂ The lounge</button><button className={tab==='tea'?'active':''} onClick={()=>setTab('tea')}>☕ Tea board</button><p>PLAY TOGETHER</p>{games.map(([id,title,,icon])=><button className={tab===id?'active':''} onClick={()=>setTab(id)} key={id}><i>{icon}</i>{title}</button>)}</nav><div className="online"><span className={room.connected?'':'off'}/> {room.connected?`${room.peers.length+1} friends around`:'connecting…'}</div></aside><section className="main"><header><div><p>{tab==='lounge'?'WELCOME BACK':tab.toUpperCase()}</p><h1>{tab==='lounge'?'Hey, '+name+'!':games.find(x=>x[0]===tab)?.[1]||'Tea Board'}</h1></div><button className="invite" onClick={async()=>{await navigator.clipboard?.writeText(location.href);alert('Invite link copied!')}}>⧉ Invite friends</button></header>
   {tab==='lounge'&&<Home setTab={setTab} room={room} message={message} setMessage={setMessage} send={send}/>}
   {tab==='tea'&&<TeaBoard roomCode={room.code} userId={room.id} name={name}/>}
-  {tab==='booth'&&<PhotoBooth roomCode={room.code} userId={room.id} name={name} peers={room.peers} gameEvents={room.gameEvents} sendGame={room.sendGame}/>}
   {tab==='mystery'&&<Mystery room={room}/>} {tab==='guess'&&<Guess room={room} me={{id:room.id,name}}/>}{tab==='mafia'&&<Mafia room={room} me={{id:room.id,name}}/>}{tab==='pacheesa'&&<Pacheesa room={room} me={{id:room.id,name}}/>}</section></main>
 }
 
